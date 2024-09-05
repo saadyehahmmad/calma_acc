@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة الرئيسية</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+        }
+        .container {
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            font-size: 36px;
+            color: #fff;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeInDown 1s ease forwards;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 24px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: fadeInUp 1s ease forwards;
+        }
+        .button:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .button:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+            transform: scale(1);
+        }
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>مرحبًا بك في لوحة التحكم</h1>
+        <a href="{{ url_for('transfer_material_to_needed') }}" class="button">تحويل الجرد اليومي الى طلبية</a>
+        <a href="{{ url_for('transfer_orders_to_components') }}" class="button">تحويل المبيعات الى مواد اولية</a>
+        <a href="{{ url_for('daily_matcher') }}" class="button">مطابقة التقرير اليومي</a>
+
+    </div>
+</body>
+</html>

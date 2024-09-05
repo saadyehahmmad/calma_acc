@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رفع بيانات المبيعات اليومية</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1 class="title">رفع بيانات المبيعات اليومية</h1>
+    
+    <form id="upload-form" method="post" enctype="multipart/form-data">
+        <div id="upload-area1" class="upload-area">
+            <input type="file" id="file-input1" name="file1" class="file-input" accept=".xlsx">
+            <label for="file-input1" class="upload-label">
+                <span class="upload-icon">📁</span>
+                اسحب الملف هنا أو انقر للتحميل
+            </label>
+            <div id="file-info1" class="file-info hidden">
+                <span id="file-name1" class="file-name"></span>
+                <div id="file-controls1" class="file-controls">
+                    <button type="button" id="preview-file1" class="control-button">معاينة</button>
+                    <button type="button" id="update-file1" class="control-button">تحديث</button>
+                    <button type="button" id="remove-file1" class="control-button">إزالة</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Note about the expected table format -->
+        <div class="note">
+            <p>الرجاء التأكد من أن ملف المبيعات يحتوي على الأعمدة التالية:</p>
+            <p>مع الاخذ بعين الاعتبار اسم الصفحة  </p>
+            <table dir="ltr" class="note-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>NAME</th>
+                        <th>QTY</th>
+                        <th>Shift</th>
+
+                    </tr>
+                </thead>
+            </table>
+            <a href="{{ url_for('static', filename='example_sales_data.xlsx') }}" download>
+                <button type="button" class="download-button">تحميل نموذج فارغ</button>
+            </a>
+        </div>
+
+        <input type="hidden" id="functionality" value="totc">
+        <div class="alert hidden"></div>
+        <button type="submit" id="download-combined" class="download-button">تحميل الملف المدمج</button>
+    </form>
+</div>
+
+<div class="upload-overlay hidden" id="overlay"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+<script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>
