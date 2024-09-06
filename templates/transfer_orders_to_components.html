@@ -43,12 +43,13 @@
                     </tr>
                 </thead>
             </table>
+            <input type="hidden" id="functionality" value="totc">
+
             <a href="{{ url_for('static', filename='example_sales_data.xlsx') }}" download>
                 <button type="button" class="download-button">تحميل نموذج فارغ</button>
             </a>
         </div>
 
-        <input type="hidden" id="functionality" value="totc">
         <div class="alert hidden"></div>
         <button type="submit" id="download-combined" class="download-button">تحميل الملف المدمج</button>
     </form>
@@ -56,7 +57,6 @@
 
 <div class="upload-overlay hidden" id="overlay"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </body>
 </html>
