@@ -7,9 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('overlay');
     const functionality = document.getElementById('functionality') ? document.getElementById('functionality').value : null;
 
-    // Initialize Socket.IO client
-    const socket = io(); 
-
     let firstFileLoaded = false;
 
     // Update alert message
@@ -125,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         removeButton.addEventListener('click', () => removeFile(fileInput1, fileNameDisplay1));
     }
 
-    // Handle form submission using WebSocket
+    // Handle form submission using fetch (AJAX)
     if (downloadButton) {
         downloadButton.addEventListener('click', function(event) {
             event.preventDefault();
@@ -134,51 +131,33 @@ document.addEventListener('DOMContentLoaded', () => {
             if (file) {
                 updateAlert('جارٍ تحميل الملف...', 'info');
 
-                // Emit event to upload file as a binary Blob, which is more compatible
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const fileData = e.target.result;
-                    
-                    // Emit the correct event based on the functionality
-                    if (functionality === 'tmtn') {
-                        socket.emit('file_uploaded_tmtn', { filename: file.name, data: fileData });
-                    } else if (functionality === 'totc') {
-                        socket.emit('file_uploaded_totc', { filename: file.name, data: fileData });
-                    } else if (functionality === 'matcher') {
-                        socket.emit('file_uploaded_matcher', { filename: file.name, data: fileData });
-                    } 
-                    else {
-                        updateAlert('لم يتم تحديد الوظيفة المطلوبة.', 'warning');
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('functionality', functionality); // Send functionality type
+
+                // Send the file and functionality type via fetch
+                fetch(`/upload_file_${functionality}`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateAlert(data.message, 'success');
+                        window.location.href = data.file_url; // Redirect to download URL
+                    } else {
+                        updateAlert(data.message, 'error');
                     }
-                };
-                reader.readAsArrayBuffer(file);
+                })
+                .catch(error => {
+                    updateAlert('حدث خطأ أثناء تحميل الملف.', 'error');
+                    console.error('Error:', error);
+                });
             } else {
                 updateAlert('يرجى تحميل الملف.', 'warning');
             }
         });
     }
-
-    // Handle real-time updates from the server for TMNT
-    socket.on('processing_status_tmtn', function(data) {
-        updateAlert(data.message, data.status);
-        if (data.status === 'success') {
-            window.location.href = data.file_url;
-        }
-    });
-
-    // Handle real-time updates from the server for TOTC
-    socket.on('processing_status_totc', function(data) {
-        updateAlert(data.message, data.status);
-        if (data.status === 'success') {
-            window.location.href = data.file_url;
-        }
-    });
-    socket.on('processing_status_matcher', function(data) {
-        updateAlert(data.message, data.status);
-        if (data.status === 'success') {
-            window.location.href = data.file_url;
-        }
-    });
 
     // Hide alert after 5 seconds
     setTimeout(hideAlert, 5000);
