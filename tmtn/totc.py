@@ -1,13 +1,10 @@
 import os
-from flask import current_app, url_for
-from flask_socketio import emit
+from flask import current_app, request, jsonify, url_for
 from werkzeug.utils import secure_filename
 from openpyxl import load_workbook
 import pandas as pd
 from openpyxl.styles import PatternFill, Alignment, Font
-from .helper import allowed_file
-
-
+from .tmtn import allowed_file
 
 def extract_and_calculate_usage(file_path1):
     try:
@@ -145,35 +142,3 @@ def format_excel_file(file_path):
     # Save the formatted workbook
     wb.save(file_path)
 
-
-def register_totc_routes(app, socketio):
-    @socketio.on('file_uploaded_totc')  # Unique event name for TOTC
-    def handle_file_uploaded_totc(data):
-        try:
-            filename = data['filename']
-            file_content = data['data']  # Assume this is already in bytes
-
-            # Convert the file data back to a file-like object (for processing)
-            file_path1 = os.path.join(current_app.config['UPLOAD_FOLDER'], secure_filename(filename))
-
-            # Ensure the upload folder exists before writing
-            os.makedirs(os.path.dirname(file_path1), exist_ok=True)
-
-            # Save the uploaded file data to disk (using binary mode)
-            with open(file_path1, 'wb') as f:
-                f.write(file_content)
-
-            socketio.emit('processing_status_totc', {'status': 'processing', 'message': 'جارٍ معالجة الملف...'})
-
-            processed_file_path = extract_and_calculate_usage(file_path1)
-            if processed_file_path.startswith('An error occurred'):
-                socketio.emit('processing_status_totc', {'status': 'error', 'message': 'حدث خطأ أثناء معالجة الملف.'})
-            else:
-                socketio.emit('processing_status_totc', {
-                    'status': 'success',
-                    'message': 'تمت معالجة الملف بنجاح!',
-                    'file_url': url_for('download_file', filename='final_content_usage.xlsx', _external=True)
-                })
-        except Exception as e:
-            print(f"Error processing file_uploaded_totc: {e}")  # Log the error for debugging
-            socketio.emit('processing_status_totc', {'status': 'error', 'message': f'حدث خطأ: {str(e)}'})
